@@ -1,0 +1,13 @@
+{
+    "scripts": {
+        "start": "concurrently \"npm run node\" \"npm run go\"",
+        "node": "cd backend-node && node server.js",
+        "go": "cd backend-go && go run cmd/main.go"
+    },
+    "devDependencies": {
+        "concurrently": "^9.1.2"
+    },
+    "dependencies": {
+        "uuid": "^11.1.0"
+    }
+}
