@@ -9,7 +9,7 @@ const errorHandler = require('./middleware/errorHandler');
 const cookieParser = require('cookie-parser');
 const credentials = require('./middleware/credentials');
 
-const PORT = process.env.PORT || 3500;
+const PORT = process.env.PORT || 3000;
 
 
 // const crypto = require('crypto');
@@ -28,6 +28,6 @@ app.use(cookieParser());
 app.use('/', express.static(path.join(__dirname, '..', 'frontend', '/dist')));
 
 app.use(require('./routes/root'))
-app.use('/api', require('./routes/auth'));
+app.use('/', require('./routes/auth'));
 
 app.listen(PORT, console.log(`Server running at http://localhost:${PORT}`));

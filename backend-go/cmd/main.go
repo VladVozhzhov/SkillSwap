@@ -1,17 +1,18 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"net/http"
+	"github.com/VladVozhzhov/SkillSwap/config"
+	"github.com/VladVozhzhov/SkillSwap/routes"
+
+	"github.com/gin-gonic/gin"
 )
 
-func apiHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(w, `{"message": "Hello from Go API!"}`)
-}
-
 func main() {
-	http.HandleFunc("/api/", apiHandler)
-	fmt.Println("Go API server running at http://localhost:4000")
-	log.Fatal(http.ListenAndServe(":4000", nil))
+	config.LoadEnv()
+	config.ConnectDatabase()
+
+	router := gin.Default()
+	router.SetTrustedProxies([]string{"127.0.0.1"})
+	routes.SetupRoutes(router)
+	router.Run(":8080")
 }
