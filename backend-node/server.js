@@ -6,7 +6,6 @@ const cors = require('cors');
 const corsOptions = require('./config/corsOptions');
 const { logger } = require('./middleware/logEvents');
 const errorHandler = require('./middleware/errorHandler');
-const verifyJWT = require('./middleware/verifyJWT');
 const cookieParser = require('cookie-parser');
 const credentials = require('./middleware/credentials');
 
@@ -25,5 +24,10 @@ app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
+
+app.use('/', express.static(path.join(__dirname, '..', 'frontend', '/dist')));
+
+app.use(require('./routes/root'))
+app.use('/api', require('./routes/auth'));
 
 app.listen(PORT, console.log(`Server running at http://localhost:${PORT}`));
