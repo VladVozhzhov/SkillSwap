@@ -7,7 +7,7 @@ function verifyJWT(req, res, next) {
     
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) return res.status(403).json({ message: err });
-    req.userId = decoded.id;
+    req.userId = decoded.id || decoded.userId;
     next();
   });
 }

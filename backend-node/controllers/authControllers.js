@@ -79,7 +79,7 @@ const authController = async (req, res) => {
     // Set token as cookie
     res.cookie('jwt', token, {
       httpOnly: true,
-      secure: isProduction,
+      secure: isProduction, // should be false for localhost unless using HTTPS
       sameSite: isProduction ? 'None' : 'Lax',
       maxAge: 1000 * 60 * 60 * 24 * 3,
     });

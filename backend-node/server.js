@@ -33,6 +33,8 @@ app.use('/api/auth', require('./routes/auth'));
 
 app.use(verifyJWT)
 
+app.use('/api', require('./routes/forum'));
+
 app.use(errorHandler)
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
