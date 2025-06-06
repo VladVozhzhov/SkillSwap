@@ -29,11 +29,9 @@ app.use(cookieParser());
 app.use('/', express.static(path.join(__dirname, '..', 'frontend', '/dist')));
 
 app.use(require('./routes/root'))
-app.use('/api', require('./routes/auth'));
+app.use('/api/auth', require('./routes/auth'));
 
 app.use(verifyJWT)
-
-app.use('/api', require('./routes/message'))
 
 app.use(errorHandler)
 
