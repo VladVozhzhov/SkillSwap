@@ -1,5 +1,5 @@
 import React from 'react'
-import { Github, Mail, Linkedin } from 'lucide-react'
+import { FaGithub, FaEnvelope, FaLinkedin } from 'react-icons/fa';
 
 const Footer: React.FC = () => {
   return (
@@ -27,13 +27,13 @@ const Footer: React.FC = () => {
           <h4 className="font-semibold mb-3">Connect</h4>
           <div className="flex space-x-4 items-center">
             <a href="https://github.com/" target="_blank" rel="noopener noreferrer">
-              <Github className="w-6 h-6 hover:text-purple-400" />
+              <FaGithub className="w-6 h-6 hover:text-purple-400" />
             </a>
             <a href="mailto:team@skillswap.com">
-              <Mail className="w-6 h-6 hover:text-purple-400" />
+              <FaEnvelope className="w-6 h-6 hover:text-purple-400" />
             </a>
             <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer">
-              <Linkedin className="w-6 h-6 hover:text-purple-400" />
+              <FaLinkedin className="w-6 h-6 hover:text-purple-400" />
             </a>
           </div>
         </div>

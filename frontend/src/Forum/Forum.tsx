@@ -43,7 +43,6 @@ const Forum: React.FC = () => {
         </div>
       );
     }
-
     return (
       <div className="max-w-3xl mx-auto mt-8 px-4">
         <Link to="/" className="inline-block mb-6 text-blue-600 hover:underline">
@@ -69,15 +68,15 @@ const Forum: React.FC = () => {
         <p className="text-gray-500">No forums available.</p>
       ) : (
         <ul className="space-y-4">
-          {forums.map((f: ForumType) => (
-            <li key={f.id} className="border rounded-lg bg-white hover:shadow-md transition">
-              <Link to={`?forum=${f.id}`} className="block p-4">
-                <h2 className="text-xl font-semibold text-blue-600">{f.title}</h2>
-                <p className="text-gray-700 mt-1 truncate">{f.description}</p>
+          {forums.map((forum: ForumType) => (
+            <li key={forum.id} className="border rounded-lg bg-white hover:shadow-md transition">
+              <Link to={`?forum=${forum.id}`} className="block p-4">
+                <h2 className="text-xl font-semibold text-blue-600">{forum.title}</h2>
+                <p className="text-gray-700 mt-1 truncate">{forum.description}</p>
                 <div className="mt-2 text-sm text-gray-500 flex space-x-2">
-                  <span>Created: {new Date(f.createdAt).toLocaleDateString()}</span>
+                  <span>Created: {forum.createdAt ? new Date(forum.createdAt).toLocaleDateString() : ''}</span>
                   <span>•</span>
-                  <span>Updated: {new Date(f.updatedAt).toLocaleDateString()}</span>
+                  <span>Updated: {forum.updatedAt ? new Date(forum.updatedAt).toLocaleDateString() : ''}</span> 
                 </div>
               </Link>
             </li>

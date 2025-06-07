@@ -1,20 +1,20 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Handshake, BookOpenCheck, Users } from 'lucide-react';
+import { FaHandshake, FaBookOpen, FaUsers } from 'react-icons/fa';
 
 const features = [
   {
-    icon: <Handshake className="w-8 h-8 text-purple-700" />,
+    icon: <FaHandshake className="w-8 h-8 text-purple-700" />,
     title: 'Skill Exchange',
     description: 'Swap your skills with others—no money, just mutual learning.',
   },
   {
-    icon: <BookOpenCheck className="w-8 h-8 text-purple-700" />,
+    icon: <FaBookOpen className="w-8 h-8 text-purple-700" />,
     title: 'Learn Anything',
     description: 'From coding to cooking, find someone to teach what you want to learn.',
   },
   {
-    icon: <Users className="w-8 h-8 text-purple-700" />,
+    icon: <FaUsers className="w-8 h-8 text-purple-700" />,
     title: 'Community Driven',
     description: 'Join a supportive network of learners, creators, and mentors.',
   },

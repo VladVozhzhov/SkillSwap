@@ -34,6 +34,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use(verifyJWT)
 
 app.use('/api', require('./routes/forum'));
+app.use('/api/comments', require('./routes/comment'));
 
 app.use(errorHandler)
 

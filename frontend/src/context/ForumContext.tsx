@@ -5,6 +5,7 @@ export type CommentType = {
   id: string
   forum_id: string
   user_id: string
+  createdBy: string;
   message: string
   createdAt: string
   updatedAt: string
@@ -17,6 +18,8 @@ export type ForumType = {
   description: string
   createdAt: string
   updatedAt: string
+  createdBy: string
+  authorName?: string
   comments: CommentType[]
 }
 
@@ -30,6 +33,8 @@ type ForumContextType = {
   deleteForum: (id: string) => Promise<void>
   getComments: (forumId: string) => Promise<void>
   createComment: (forumId: string, message: string) => Promise<void>
+  updateComment: (forumId: string, commentId: string, comment: CommentType) => Promise<void>
+  deleteComment: (commentId: string) => Promise<void>
   forums: ForumType[]
   comments: CommentType[]
 }
@@ -50,7 +55,7 @@ export const ForumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     | { type: "SET_COMMENTS"; payload: { forumId: string, comments: CommentType[] } }
     | { type: "ADD_COMMENT"; payload: { forumId: string, comment: CommentType } }
     | { type: "UPDATE_COMMENT"; payload: { forumId: string, comment: CommentType } }
-    | { type: "DELETE_COMMENT"; payload: { forumId: string, commentId: string } };
+    | { type: "DELETE_COMMENT"; payload: { commentId: string } };
 
   const forumReducer = (state: ForumState, action: ForumAction): ForumState => {
     switch (action.type) {
@@ -105,16 +110,12 @@ export const ForumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       case "DELETE_COMMENT":
         return {
           ...state,
-          forums: state.forums.map((forum) =>
-            forum.id === action.payload.forumId
-              ? {
-                  ...forum,
-                  comments: forum.comments.filter(
-                    (comment) => comment.id !== action.payload.commentId
-                  ),
-                }
-              : forum
-          ),
+          forums: state.forums.map((forum) => ({
+            ...forum,
+            comments: forum.comments.filter(
+              (comment) => comment.id !== action.payload.commentId
+            ),
+          })),
         };
       default:
         throw new Error(`Unhandled action type: ${(action as ForumAction).type}`);
@@ -126,34 +127,63 @@ export const ForumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     comments: []
   });
 
+  function mapForum(forum: any): ForumType {
+    return {
+      id: forum.id,
+      title: forum.title,
+      description: forum.description,
+      createdAt: forum.createdAt || forum.created_at,
+      updatedAt: forum.updatedAt || forum.updated_at,
+      createdBy: forum.createdBy || forum.created_by,
+      authorName: forum.authorName || forum.author_name,
+      comments: forum.comments
+        ? forum.comments.map(mapComment)
+        : [],
+    };
+  }
+
+  function mapComment(comment: any): CommentType {
+    return {
+      id: comment.id,
+      forum_id: comment.forum_id,
+      user_id: comment.user_id,
+      createdBy: comment.user_name || comment.username || '',
+      message: comment.message,
+      createdAt: comment.createdAt || comment.created_at,
+      updatedAt: comment.updatedAt || comment.updated_at,
+      edited: comment.edited,
+    };
+  }
+
   const fetchForums = async (): Promise<void> => {
     try {
       const response = await axios.get<ForumType[]>("http://localhost:3500/api/forums", { withCredentials: true });
-      dispatch({ type: "SET_FORUMS", payload: response.data });
+      const mapped = response.data.map(mapForum);
+      dispatch({ type: "SET_FORUMS", payload: mapped });
     } catch (error) {
       console.error("Error fetching forums:", error);
     }
   }
 
   const fetchForumById = async (id: string): Promise<void> => {
-  try {
-    const response = await axios.get<ForumType>("http://localhost:3500/api/forums-id", {
-      params: { id },
-      withCredentials: true,
-    });
+    try {
+      const response = await axios.get<ForumType>("http://localhost:3500/api/forums-id", {
+        params: { id },
+        withCredentials: true,
+      });
+      const mapped = mapForum(response.data);
+      const existing = state.forums.find(f => f.id === id);
 
-    const existing = state.forums.find(f => f.id === id);
+      if (existing) {
+        dispatch({ type: "UPDATE_FORUM", payload: mapped });
+      } else {
+        dispatch({ type: "ADD_FORUM", payload: mapped });
+      }
 
-    if (existing) {
-      dispatch({ type: "UPDATE_FORUM", payload: response.data });
-    } else {
-      dispatch({ type: "ADD_FORUM", payload: response.data });
+    } catch (error) {
+      console.error("Error fetching forum by ID:", error);
     }
-
-  } catch (error) {
-    console.error("Error fetching forum by ID:", error);
-  }
-};
+  };
 
 
   const createForum = async (forum: Omit<ForumType, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> => {
@@ -193,18 +223,61 @@ export const ForumProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const getComments = async (forumId: string): Promise<void> => {
     try {
       const response = await axios.get<CommentType[]>(`http://localhost:3500/api/comments`, { params: { forumId }, withCredentials: true });
-      dispatch({ type: "SET_COMMENTS", payload: { forumId, comments: response.data } });
+      const mapped = response.data.map(mapComment);
+      dispatch({ type: "SET_COMMENTS", payload: { forumId, comments: mapped } });
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
   }
 
   const createComment = async (forumId: string, message: string): Promise<void> => {
-    throw new Error("will implement this later");
+    try {
+      const response = await axios.post<CommentType>(
+        `http://localhost:3500/api/comments`,
+        { message },
+        { params: { forumId }, withCredentials: true }
+      );
+      const mapped = mapComment(response.data);
+      dispatch({ type: "ADD_COMMENT", payload: { forumId, comment: mapped } });
+    } catch (error) {
+      console.error("Error creating comment:", error);
+    }
+  }
+
+  const updateComment = async (forumId: string, commentId: string, comment: CommentType): Promise<void> => {
+    try {
+      const response = await axios.put<CommentType>(
+        `http://localhost:3500/api/comments`,
+        { message: comment.message },
+        { params: { commentId }, withCredentials: true }
+      );
+      const mapped = mapComment(response.data);
+      dispatch({ type: "UPDATE_COMMENT", payload: { forumId, comment: mapped } });
+    } catch (error) {
+      console.error("Error updating comment:", error);
+    }
+  }
+
+  const deleteComment = async (commentId: string): Promise<void> => {
+    try {
+      await axios.delete(`http://localhost:3500/api/comments`, {
+        params: { commentId },
+        withCredentials: true
+      });
+      dispatch({ type: "DELETE_COMMENT", payload: { commentId } });
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
   }
 
   return (
-    <ForumContext.Provider value={{ ForumType: {} as ForumType, CommentType: {} as CommentType, fetchForums, fetchForumById, createForum, updateForum, deleteForum, getComments, createComment, forums: state.forums, comments: state.comments }}>
+    <ForumContext.Provider value={{ 
+      ForumType: {} as ForumType, 
+      CommentType: {} as CommentType, 
+      fetchForums, fetchForumById, createForum, updateForum, deleteForum, 
+      getComments, createComment, updateComment, deleteComment,
+      forums: state.forums, comments: state.comments 
+    }}>
       {children}
     </ForumContext.Provider>
   );

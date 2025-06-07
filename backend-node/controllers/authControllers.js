@@ -42,7 +42,7 @@ const registerController = async (req, res) => {
       maxAge: 1000 * 60 * 60 * 24 * 3,
     });
 
-    res.status(201).json({ message: 'User registered', userId: userId });
+    res.status(201).json({ message: 'User registered', userId: userId, username: username });
   } catch (err) {
     if (err.code === '23505') return res.status(400).json({ error: 'Username already exists' });
     res.status(500).json({ message: err });
@@ -84,7 +84,7 @@ const authController = async (req, res) => {
       maxAge: 1000 * 60 * 60 * 24 * 3,
     });
 
-    res.json({ message: 'Login successful', userId: user.id });
+    res.json({ message: 'Login successful', userId: user.id, username: user.name });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Login error', error: err });
@@ -142,7 +142,7 @@ const loginGoogleController = async (req, res) => {
       maxAge: 1000 * 60 * 60 * 24 * 3,
     });
 
-    res.json({ userId });
+    res.json({ userId, username: name });
   } catch (err) {
     console.error('Google login error:', err);
     res.status(500).json({ error: 'Failed to authenticate with Google' });

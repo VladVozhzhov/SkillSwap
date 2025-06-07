@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useForum } from "../context/ForumContext";
+import { useAuth } from "../context/AuthContext";
 
 const Create: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
@@ -14,6 +15,7 @@ const Create: React.FC = () => {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const { userId } = useAuth();
 
   useEffect(() => {
     if (id) {
@@ -42,7 +44,7 @@ const Create: React.FC = () => {
       if (id) {
         await updateForum(id, { title, description });
       } else {
-        await createForum({ title, description, comments: [] });
+        await createForum({ title, description, comments: [], createdBy: userId! });
       }
       navigate("/forum");
     } catch (error) {

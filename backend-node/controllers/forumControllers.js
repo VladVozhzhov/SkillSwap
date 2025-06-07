@@ -2,7 +2,12 @@ const pool = require('../config/db');
 
 const getAllForums = async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM forums ORDER BY created_at DESC');
+    const result = await pool.query(
+      `SELECT f.*, u.name AS author_name
+       FROM forums f
+       JOIN users u ON f.created_by = u.id
+       ORDER BY f.created_at DESC`
+    );
     res.status(200).json(result.rows);
   } catch (err) {
     console.error(err);
@@ -12,12 +17,18 @@ const getAllForums = async (req, res) => {
 
 const getForumById = async (req, res) => {
   const forumId = req.query.id;
-  if (isNaN(forumId)) {
-    return res.status(400).json({ error: 'Invalid forum ID' });
+  if (!forumId) {
+    return res.status(400).json({ error: 'Forum ID is required' });
   }
 
   try {
-    const result = await pool.query('SELECT * FROM forums WHERE id = $1', [forumId]);
+    const result = await pool.query(
+      `SELECT f.*, u.name AS author_name
+       FROM forums f
+       JOIN users u ON f.created_by = u.id
+       WHERE f.id = $1`,
+      [forumId]
+    );
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Forum not found' });
     }
@@ -57,8 +68,9 @@ const updateForum = async (req, res) => {
   const { title, description } = req.body;
   const userId = req.userId;
 
-  if (isNaN(forumId)) {
-    return res.status(400).json({ error: 'Invalid forum ID' });
+  // Remove isNaN check, allow UUIDs
+  if (!forumId) {
+    return res.status(400).json({ error: 'Forum ID is required' });
   }
 
   if (!title || !description) {
@@ -95,8 +107,9 @@ const deleteForum = async (req, res) => {
   const forumId = req.query.id;
   const userId = req.userId;
 
-  if (isNaN(forumId)) {
-    return res.status(400).json({ error: 'Invalid forum ID' });
+  // Remove isNaN check, allow UUIDs
+  if (!forumId) {
+    return res.status(400).json({ error: 'Forum ID is required' });
   }
 
   const userIsCreator = await pool.query(

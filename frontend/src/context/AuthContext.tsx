@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 type AuthContextType = {
+  userId: string | null;
+  username: string | null;
   authed: boolean;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -14,6 +16,8 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [userId, setUserId] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [authed, setAuthed] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
@@ -21,9 +25,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        await axios.get("http://localhost:3500/api/auth/check", { 
+        const res = await axios.get("http://localhost:3500/api/auth/check", { 
           withCredentials: true 
         });
+        setUserId(res.data.userId);
+        setUsername(res.data.username);
         setAuthed(true);
       } catch (error: any) {
         setAuthed(false);
@@ -37,11 +43,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      await axios.post(
+      const res = await axios.post(
         "http://localhost:3500/api/auth/login", 
         { email, password }, 
         { withCredentials: true }
       );
+      setUserId(res.data.userId)
+      setUsername(res.data.username);
       setAuthed(true);
       navigate('/forum');
     } catch (error: any) {
@@ -52,11 +60,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = async (email: string, username: string, password: string) => {
     try {
-      await axios.post(
+      const res = await axios.post(
         'http://localhost:3500/api/auth/register',
         { email, username, password },
         { withCredentials: true }
       )
+      setUserId(res.data.userId)
+      setUsername(res.data.username);
       setAuthed(true);
       navigate('/forum');
     } catch(err: any) {
@@ -66,17 +76,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     await axios.get("http://localhost:3500/api/auth/logout", { withCredentials: true });
+    setUserId(null);
+    setUsername(null);
     setAuthed(false);
     navigate('/');
   };
 
   const loginGoogle = async (idToken: string) => {
     try {
-      await axios.post(
+      const res = await axios.post(
         "http://localhost:3500/api/auth/google",
         { idToken },
         { withCredentials: true }
       )
+      setUserId(res.data.userId)
+      setUsername(res.data.username);
       setAuthed(true)
       navigate('/forum');
     } catch(err: any) {
@@ -85,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   return (
-    <AuthContext.Provider value={{ authed, loading, login, register, logout, loginGoogle }}>
+    <AuthContext.Provider value={{ userId, username, authed, loading, login, register, logout, loginGoogle }}>
       {children}
     </AuthContext.Provider>
   );
