@@ -8,7 +8,6 @@ const { logger } = require('./middleware/logEvents');
 const errorHandler = require('./middleware/errorHandler');
 const cookieParser = require('cookie-parser');
 const credentials = require('./middleware/credentials');
-const verifyJWT = require('./middleware/verifyJWT');
 
 const PORT = process.env.PORT || 3500;
 
@@ -30,9 +29,6 @@ app.use('/', express.static(path.join(__dirname, '..', 'frontend', '/dist')));
 
 app.use(require('./routes/root'))
 app.use('/api/auth', require('./routes/auth'));
-
-app.use(verifyJWT)
-
 app.use('/api', require('./routes/forum'));
 app.use('/api/comments', require('./routes/comment'));
 

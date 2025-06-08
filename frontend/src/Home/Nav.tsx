@@ -7,8 +7,8 @@ const Nav: React.FC = () => {
       <h1 className="text-2xl font-bold tracking-wide text-white">
         SkillSwap
       </h1>
-      <a href='#header' className='py-2 px-4 rounded-lg bg-purple-800 hover:bg-purple-900 active:bg-purple-950 text-white transition duration-150'>To Top</a>
       <a href='#about' className='py-2 px-4 rounded-lg bg-purple-800 hover:bg-purple-900 active:bg-purple-950 text-white transition duration-150'>About us</a>
+      <a href='#features' className='py-2 px-4 rounded-lg bg-purple-800 hover:bg-purple-900 active:bg-purple-950 text-white transition duration-150'>Features</a>
       <Link to={'/forum'} className='py-2 px-4 rounded-lg bg-purple-800 hover:bg-purple-900 active:bg-purple-950 text-white transition duration-150'>Explore</Link>
       <div className='w-1/4 justify-end flex gap-8'>
         <Link to={'/login'} className='bg-[#1F2937] hover:bg-[#111827] active:bg-[#000000] text-white cursor-pointer py-2 px-4 rounded-lg transition duration-150'>Log in</Link>

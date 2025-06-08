@@ -36,14 +36,17 @@ const Main: React.FC = () => {
         </p>
       </section>
 
-      <Link
-        to='/register'
-        className="bg-white text-2xl text-[#003153] font-semibold py-2 px-4 rounded-lg shadow hover:bg-gray-100 active:bg-gray-200 transition duration-75"
-      >
-        Start Swapping your skills
-      </Link>
+      <section className="my-12">
+        <Link
+          to='/register'
+          className="bg-white text-2xl text-[#003153] font-semibold py-2 px-4 rounded-lg shadow hover:bg-gray-100 active:bg-gray-200 transition duration-75"
+        >
+          Start Swapping your skills
+        </Link>
+      </section>
 
-      <section className="bg-gray-100 py-12 px-6">
+
+      <section className="bg-gray-100 py-12 px-6" id="features">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-[#003153] mb-8">Why Use SkillSwap?</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">

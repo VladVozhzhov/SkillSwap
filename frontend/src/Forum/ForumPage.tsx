@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import type { CommentType, ForumType } from '../context/ForumContext';
+import type { CommentType } from '../context/ForumContext';
 import { useForum } from '../context/ForumContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { FaRegEdit, FaTrash } from 'react-icons/fa';
 
-const ForumPage: React.FC<ForumType> = (props) => {
+type ForumPageProps = {
+  id: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  authorName?: string;
+  comments: CommentType[];
+  handleLogout: () => void;
+}
+
+const ForumPage: React.FC<ForumPageProps> = (props) => {
   const {
     id,
     title,
@@ -14,6 +26,7 @@ const ForumPage: React.FC<ForumType> = (props) => {
     updatedAt = (props as any).updatedAt || (props as any).updated_at,
     createdBy = (props as any).createdBy || (props as any).created_by,
     authorName = (props as any).authorName || (props as any).author_name,
+    handleLogout
   } = props;
 
   const {
@@ -49,7 +62,7 @@ const ForumPage: React.FC<ForumType> = (props) => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { userId, username } = useAuth();
+  const { userId, username, authed } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,8 +137,51 @@ const ForumPage: React.FC<ForumType> = (props) => {
     }
   }, [error]);
 
+  const handlePopover = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const popoverContent = document.getElementById('logout-popover');
+    if (popoverContent) {
+      popoverContent.classList.toggle('hidden');
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {authed && (
+        <div className="flex justify-end">
+          <div className="relative">
+            <button
+              onClick={handlePopover}
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer"
+            >
+              Logout
+            </button>
+            <div
+              id="logout-popover"
+              className="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg"
+            >
+              <p className="p-4 text-gray-700">Are you sure you want to logout?</p>
+              <div className="flex justify-end p-2 space-x-2">
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    handlePopover({ preventDefault: () => {} } as any);
+                  }}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={handlePopover}
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Forum Info */}
       <div className="bg-white shadow rounded-lg p-6">
         {editMode ? (
